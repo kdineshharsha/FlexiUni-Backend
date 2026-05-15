@@ -19,14 +19,6 @@ const userSchema = new mongoose.Schema(
 
       trim: true,
     },
-    studentId: {
-      type: String,
-      trim: true,
-      unique: true,
-      required: function () {
-        return this.role === "student";
-      },
-    },
     password: {
       type: String,
       required: true,
@@ -35,6 +27,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["admin", "student", "employer"],
       required: true,
+    },
+    studentId: {
+      type: String,
+      trim: true,
+      unique: true,
+      sparse: true,
+      required: function () {
+        return this.role === "student";
+      },
     },
     profilePic: {
       type: String,

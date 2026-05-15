@@ -48,14 +48,27 @@ export const registerUserService = async (userData) => {
 
 export const loginUserService = async (credentials) => {
   const { email, password } = credentials;
-  const user = await User.findOne({ email });
+  if (!email || !password) {
+    throw new AppError("Please provide both email and password", 400);
+  }
+  const user = await User.findOne({ email }).select(
+    "password _id fullName email role",
+  );
   if (!user) {
     throw new AppError("Invalid email or password", 401);
   }
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  const isPasswordValid = bcrypt.compareSync(
+    credentials.password,
+    user.password,
+  );
   if (!isPasswordValid) {
     throw new AppError("Invalid email or password", 401);
   }
+  const jwtPayload = {
+    id: user._id,
+    role: user.role,
+  };
   const userData = {
     id: user._id,
     fullName: user.fullName,
@@ -63,6 +76,8 @@ export const loginUserService = async (credentials) => {
     role: user.role,
   };
 
-  const token = jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: "7d" });
+  const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
   return { user: userData, token };
 };
