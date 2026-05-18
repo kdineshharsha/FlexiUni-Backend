@@ -52,3 +52,11 @@ export const updateJobService = async (jobId, employer, updateData) => {
   });
   return updatedJob;
 };
+
+export const getJobByIdService = async (jobId) => {
+  const job = await Job.findById(jobId).populate("postedBy", "fullName email");
+  if (!job) {
+    throw new AppError("Job not found", 404);
+  }
+  return job;
+};

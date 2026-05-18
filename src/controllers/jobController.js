@@ -62,3 +62,17 @@ export const updateJob = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getJobById = async (req, res, next) => {
+  try {
+    const jobId = req.params.jobId;
+    const job = await getJobByIdService(jobId);
+    res.status(200).json({
+      status: "success",
+      message: "Job fetched successfully",
+      data: job,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
