@@ -45,6 +45,12 @@ const userSchema = new mongoose.Schema(
     university: {
       type: String,
       default: "",
+      
+      required: function () {
+        return this.role === "student"; 
+      },
+
+
     },
 
     location: {
