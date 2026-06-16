@@ -16,6 +16,8 @@ export const registerUserService = async (userData) => {
     adminSecret,
   } = userData;
 
+  console.log("Registering user with data:", userData);
+
   if (!fullName || !email || !password || !role) {
     throw new AppError("Missing required fields", 400);
   }

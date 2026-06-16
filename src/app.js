@@ -7,7 +7,7 @@ import userRouter from "./routes/userRouter.js";
 import globalErrorHandler from "./middlewares/errorMiddleware.js";
 import mongoSanitize from "express-mongo-sanitize";
 import jobRouter from "./routes/jobRouter.js";
-import verifyJWT from "./middlewares/auth.js";
+
 import applicationRouter from "./routes/applicationRouter.js";
 const app = express();
 

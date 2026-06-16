@@ -4,6 +4,7 @@ import {
   getAllJobs,
   getJobById,
   updateJob,
+  getJobsByFilter,
 } from "../controllers/jobController.js";
 
 import express from "express";
@@ -11,6 +12,7 @@ import verifyJWT from "../middlewares/auth.js";
 
 const jobRouter = express.Router();
 
+jobRouter.get("/", getJobsByFilter);
 jobRouter.get("/all", getAllJobs);
 jobRouter.get("/:jobId", getJobById);
 jobRouter.post("/create", verifyJWT, createJob);

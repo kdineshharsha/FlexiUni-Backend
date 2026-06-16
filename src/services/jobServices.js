@@ -60,3 +60,38 @@ export const getJobByIdService = async (jobId) => {
   }
   return job;
 };
+
+export const getJobsByFilterService = async (query = {}) => {
+  const page = parseInt(query.page, 10) || 1;
+  const limit = parseInt(query.limit, 10) || 10;
+  const skip = (page - 1) * limit;
+
+  const filter = {};
+
+  if (query.keyword) {
+    filter.$or = [
+      { title: { $regex: query.keyword, $options: "i" } },
+      { description: { $regex: query.keyword, $options: "i" } },
+    ];
+  }
+
+  if (query.location) {
+    filter.location = { $regex: query.location, $options: "i" };
+  }
+  if (query.category && query.category !== "All Categories") {
+    filter.category = query.category;
+  }
+
+  const totalJobs = await Job.countDocuments(filter);
+  const jobs = await Job.find(filter)
+    .populate("postedBy", "fullName email")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+  return {
+    jobs,
+    totalJobs,
+    totalPages: Math.ceil(totalJobs / limit),
+    currentPage: page,
+  };
+};

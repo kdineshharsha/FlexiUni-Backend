@@ -1,6 +1,8 @@
 import {
   createJobService,
   deleteJobService,
+  getAllJobsService,
+  getJobsByFilterService,
   updateJobService,
 } from "../services/jobServices.js";
 
@@ -71,6 +73,20 @@ export const getJobById = async (req, res, next) => {
       status: "success",
       message: "Job fetched successfully",
       data: job,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getJobsByFilter = async (req, res, next) => {
+  try {
+    const result = await getJobsByFilterService(req.query);
+
+    res.status(200).json({
+      status: "success",
+      message: "Jobs fetched successfully",
+      data: result,
     });
   } catch (error) {
     next(error);
