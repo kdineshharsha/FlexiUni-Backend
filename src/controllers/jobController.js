@@ -2,6 +2,7 @@ import {
   createJobService,
   deleteJobService,
   getAllJobsService,
+  getJobByIdService,
   getJobsByFilterService,
   updateJobService,
 } from "../services/jobServices.js";

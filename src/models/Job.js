@@ -18,7 +18,7 @@ const jobSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["Supermarket", "Garment", "Shop", "Delivery", "Other"],
+      enum: ["Supermarket", "Garment", "Shop", "Delivery", "Retail", "Other"],
       required: true,
     },
     shiftDetails: {

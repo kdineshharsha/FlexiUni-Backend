@@ -6,13 +6,19 @@ export const applyJobService = async (jobId, studentId) => {
   if (existingApplication) {
     throw new Error("You have already applied for this job");
   }
-  const currentApplyCount = await Application.countDocuments({ jobId });
-  const vacuncyCount = await Job.countDocuments({ jobId });
-  if (currentApplyCount >= vacuncyCount) {
+  const jobData = await Job.findById(jobId).select("vacancy").lean();
+  if (!jobData) {
+    throw new Error("Job not found");
+  }
+
+  if (jobData.vacancy <= 0) {
     throw new Error("No more vacancies available for this job");
   }
   const newApplication = new Application({ jobId, studentId });
   await newApplication.save();
+  await Job.findByIdAndUpdate(jobId, {
+    $inc: { vacancy: -1 },
+  });
   return newApplication;
 };
 
