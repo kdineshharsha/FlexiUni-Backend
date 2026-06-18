@@ -95,3 +95,8 @@ export const getJobsByFilterService = async (query = {}) => {
     currentPage: page,
   };
 };
+
+export const getEmployerJobsService = async (employerId) => {
+  const jobs = await Job.find({ postedBy: employerId }).sort({ createdAt: -1 });
+  return jobs;
+};

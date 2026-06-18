@@ -7,6 +7,11 @@ const jobSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    companyName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     title: {
       type: String,
       required: true,
@@ -16,9 +21,25 @@ const jobSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    requirements: { type: [String], default: [] },
     category: {
       type: String,
-      enum: ["Supermarket", "Garment", "Shop", "Delivery", "Retail", "Other"],
+      enum: [
+        "Supermarket",
+        "Garment",
+        "Shop",
+        "Delivery",
+        "Retail",
+        "F&B",
+        "Admin",
+        "Hospitality",
+        "Logistics",
+        "Technology",
+        "Healthcare",
+        "Education",
+        "Finance",
+        "Other",
+      ],
       required: true,
     },
     shiftDetails: {

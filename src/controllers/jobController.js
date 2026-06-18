@@ -1,3 +1,4 @@
+import { get } from "mongoose";
 import {
   createJobService,
   deleteJobService,
@@ -5,6 +6,7 @@ import {
   getJobByIdService,
   getJobsByFilterService,
   updateJobService,
+  getEmployerJobsService,
 } from "../services/jobServices.js";
 
 export const createJob = async (req, res, next) => {
@@ -88,6 +90,20 @@ export const getJobsByFilter = async (req, res, next) => {
       status: "success",
       message: "Jobs fetched successfully",
       data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getEmployerJobs = async (req, res, next) => {
+  try {
+    const employerId = req.user.id;
+    const jobs = await getEmployerJobsService(employerId);
+    res.status(200).json({
+      status: "success",
+      message: "Jobs fetched successfully",
+      data: jobs,
     });
   } catch (error) {
     next(error);

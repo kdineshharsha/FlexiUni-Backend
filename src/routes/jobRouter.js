@@ -5,6 +5,7 @@ import {
   getJobById,
   updateJob,
   getJobsByFilter,
+  getEmployerJobs,
 } from "../controllers/jobController.js";
 
 import express from "express";
@@ -16,6 +17,7 @@ jobRouter.get("/", getJobsByFilter);
 jobRouter.get("/all", getAllJobs);
 jobRouter.get("/:jobId", getJobById);
 jobRouter.post("/create", verifyJWT, createJob);
+jobRouter.get("/employer/jobs", verifyJWT, getEmployerJobs);
 jobRouter.delete("/delete/:jobId", verifyJWT, deleteJob);
 jobRouter.patch("/update/:jobId", verifyJWT, updateJob);
 
