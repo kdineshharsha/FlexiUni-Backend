@@ -47,7 +47,23 @@ export const updateJobService = async (jobId, employer, updateData) => {
   if (job.postedBy.toString() !== employerId && employer.role !== "admin") {
     throw new AppError("You are not authorized to update this job", 403);
   }
-  const updatedJob = await Job.findByIdAndUpdate(jobId, updateData, {
+
+  let { requirements, ...otherJobDetails } = updateData;
+  if (requirements) {
+    let processedRequirements = [];
+    if (typeof requirements === "string") {
+      processedRequirements = requirements
+        .split(/\\n|\n|\r\n/)
+        .filter((req) => req.trim() !== "");
+    } else if (Array.isArray(requirements)) {
+      processedRequirements = requirements
+        .flatMap((req) => req.split(/\\n|\n|\r\n/))
+        .filter((req) => req.trim() !== "");
+    }
+
+    otherJobDetails.requirements = processedRequirements;
+  }
+  const updatedJob = await Job.findByIdAndUpdate(jobId, otherJobDetails, {
     returnDocument: "after",
   });
   return updatedJob;
