@@ -29,3 +29,26 @@ export const getAllByIdService = async (jobId) => {
   );
   return applications;
 };
+
+export const updateApplicationStatusService = async (
+  applicationId,
+  newStatus,
+) => {
+  const validStatuses = ["pending", "shortlisted", "hired", "rejected"];
+
+  if (!validStatuses.includes(newStatus)) {
+    throw new Error("Invalid status type");
+  }
+
+  const updatedApplication = await Application.findByIdAndUpdate(
+    applicationId,
+    { status: newStatus },
+    { new: true },
+  );
+
+  if (!updatedApplication) {
+    throw new Error("Application not found");
+  }
+
+  return updatedApplication;
+};

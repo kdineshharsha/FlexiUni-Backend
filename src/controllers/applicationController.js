@@ -1,6 +1,7 @@
 import {
   applyJobService,
   getAllByIdService,
+  updateApplicationStatusService,
 } from "../services/applicationServices.js";
 
 export const applyJob = async (req, res, next) => {
@@ -26,6 +27,24 @@ export const getAllById = async (req, res, next) => {
       status: "success",
       message: "Applications fetched successfully",
       data: applications,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateApplicationStatus = async (req, res, next) => {
+  try {
+    const applicationId = req.params.applicationId;
+    const newStatus = req.body.status;
+    const updatedApplication = await updateApplicationStatusService(
+      applicationId,
+      newStatus,
+    );
+    res.status(200).json({
+      status: "success",
+      message: "Application status updated successfully",
+      data: updatedApplication,
     });
   } catch (error) {
     next(error);
