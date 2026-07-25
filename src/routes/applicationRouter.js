@@ -1,6 +1,7 @@
 import express from "express";
 import {
   applyJob,
+  checkApplicationStatus,
   getAllById,
   updateApplicationStatus,
 } from "../controllers/applicationController.js";
@@ -10,6 +11,7 @@ const applicationRouter = express.Router();
 
 applicationRouter.get("/:jobId", verifyJWT, getAllById);
 applicationRouter.post("/apply/:jobId", verifyJWT, applyJob);
+applicationRouter.get("/status/:jobId", verifyJWT, checkApplicationStatus);
 applicationRouter.patch(
   "/update/:applicationId",
   verifyJWT,

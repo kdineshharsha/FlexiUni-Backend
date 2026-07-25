@@ -1,5 +1,6 @@
 import {
   applyJobService,
+  checkApplicationStatusService,
   getAllByIdService,
   updateApplicationStatusService,
 } from "../services/applicationServices.js";
@@ -45,6 +46,21 @@ export const updateApplicationStatus = async (req, res, next) => {
       status: "success",
       message: "Application status updated successfully",
       data: updatedApplication,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const checkApplicationStatus = async (req, res, next) => {
+  try {
+    const studentId = req.user.id;
+    const jobId = req.params.jobId;
+    const hasApplied = await checkApplicationStatusService(jobId, studentId);
+
+    res.status(200).json({
+      status: "success",
+      hasApplied: hasApplied,
     });
   } catch (error) {
     next(error);

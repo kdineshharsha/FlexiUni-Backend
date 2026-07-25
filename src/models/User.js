@@ -45,15 +45,46 @@ const userSchema = new mongoose.Schema(
     university: {
       type: String,
       default: "",
-      
+
       required: function () {
-        return this.role === "student"; 
+        return this.role === "student";
       },
+    },
+    course: {
+      type: String,
+      default: "",
 
-
+      required: function () {
+        return this.role === "student";
+      },
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    bio: {
+      type: String,
+      default: "",
     },
 
     location: {
+      type: String,
+      default: "",
+    },
+
+    companyName: {
+      type: String,
+      default: "",
+    },
+    companyDescription: {
+      type: String,
+      default: "",
+    },
+    website: {
+      type: String,
+      default: "",
+    },
+    companyAddress: {
       type: String,
       default: "",
     },

@@ -53,9 +53,7 @@ export const loginUserService = async (credentials) => {
   if (!email || !password) {
     throw new AppError("Please provide both email and password", 400);
   }
-  const user = await User.findOne({ email }).select(
-    "password _id fullName email role",
-  );
+  const user = await User.findOne({ email });
   if (!user) {
     throw new AppError("Invalid email or password", 401);
   }
@@ -71,15 +69,51 @@ export const loginUserService = async (credentials) => {
     id: user._id,
     role: user.role,
   };
-  const userData = {
+
+  let userData = {
     id: user._id,
     fullName: user.fullName,
     email: user.email,
     role: user.role,
+    profilePic: user.profilePic,
+    number: user.number,
   };
+
+  if (user.role === "student") {
+    userData = {
+      ...userData,
+      university: user.university,
+      course: user.course,
+      skills: user.skills,
+      bio: user.bio,
+    };
+  } else if (user.role === "employer") {
+    userData = {
+      ...userData,
+      companyName: user.companyName,
+      companyDescription: user.companyDescription,
+      website: user.website,
+      companyAddress: user.companyAddress,
+    };
+  }
 
   const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
   return { user: userData, token };
+};
+
+export const updateUserProfileService = async (userId, updateData) => {
+  const { password, role, email, _id, ...safeData } = updateData;
+
+  const updatedUser = await User.findByIdAndUpdate(userId, safeData, {
+    new: true,
+    runValidators: true,
+  }).select("-password");
+
+  if (!updatedUser) {
+    throw new Error("User not found");
+  }
+
+  return updatedUser;
 };
