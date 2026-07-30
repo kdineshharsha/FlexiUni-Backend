@@ -3,12 +3,14 @@ import {
   applyJob,
   checkApplicationStatus,
   getAllById,
+  getMyApplications,
   updateApplicationStatus,
 } from "../controllers/applicationController.js";
 import verifyJWT from "../middlewares/auth.js";
 
 const applicationRouter = express.Router();
 
+applicationRouter.get("/my-applications", verifyJWT, getMyApplications);
 applicationRouter.get("/:jobId", verifyJWT, getAllById);
 applicationRouter.post("/apply/:jobId", verifyJWT, applyJob);
 applicationRouter.get("/status/:jobId", verifyJWT, checkApplicationStatus);

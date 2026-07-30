@@ -84,3 +84,19 @@ export const checkApplicationStatusService = async (jobId, studentId) => {
     return false;
   }
 };
+
+export const getMyApplicationsService = async (studentId) => {
+  const applications = await Application.find({ studentId })
+    .populate({
+      path: "jobId",
+      select:
+        "title companyName category location salary shiftDetails vacancy postedBy",
+      populate: {
+        path: "postedBy",
+        select: "fullName email",
+      },
+    })
+    .sort({ createdAt: -1 });
+
+  return applications;
+};

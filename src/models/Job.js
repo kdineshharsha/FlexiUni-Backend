@@ -50,6 +50,19 @@ const jobSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    contactMethods: [
+      {
+        type: {
+          type: String,
+          enum: ["whatsapp", "call", "email"],
+          required: true,
+        },
+        value: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     salary: {
       type: Number,
       required: true,

@@ -2,6 +2,7 @@ import {
   applyJobService,
   checkApplicationStatusService,
   getAllByIdService,
+  getMyApplicationsService,
   updateApplicationStatusService,
 } from "../services/applicationServices.js";
 
@@ -61,6 +62,22 @@ export const checkApplicationStatus = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       hasApplied: hasApplied,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMyApplications = async (req, res, next) => {
+  try {
+    const studentId = req.user.id;
+
+    const applications = await getMyApplicationsService(studentId);
+
+    res.status(200).json({
+      status: "success",
+      results: applications.length,
+      data: applications,
     });
   } catch (error) {
     next(error);
