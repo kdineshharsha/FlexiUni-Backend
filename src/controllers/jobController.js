@@ -7,6 +7,7 @@ import {
   getJobsByFilterService,
   updateJobService,
   getEmployerJobsService,
+  getRecommendedJobsService,
 } from "../services/jobServices.js";
 
 export const createJob = async (req, res, next) => {
@@ -103,6 +104,21 @@ export const getEmployerJobs = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       message: "Jobs fetched successfully",
+      data: jobs,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getRecommendedJobs = async (req, res, next) => {
+  try {
+    const studentId = req.user._id || req.user.id;
+    const jobs = await getRecommendedJobsService(studentId);
+
+    return res.status(200).json({
+      success: true,
+      results: jobs.length,
       data: jobs,
     });
   } catch (error) {

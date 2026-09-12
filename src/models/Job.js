@@ -74,5 +74,5 @@ const jobSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-
+jobSchema.index({ vacancy: 1, location: 1, category: 1, createdAt: -1 });
 export default mongoose.model("Job", jobSchema);

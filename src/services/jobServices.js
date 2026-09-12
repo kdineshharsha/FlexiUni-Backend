@@ -1,6 +1,7 @@
 import Application from "../models/Application.js";
 import Job from "../models/Job.js";
 import AppError from "../utils/appError.js";
+import User from "../models/User.js";
 
 export const createJobService = async (jobData, employerId) => {
   if (!jobData.title || !jobData.description || !jobData.location) {
@@ -115,4 +116,144 @@ export const getJobsByFilterService = async (query = {}) => {
 export const getEmployerJobsService = async (employerId) => {
   const jobs = await Job.find({ postedBy: employerId }).sort({ createdAt: -1 });
   return jobs;
+};
+
+export const getRecommendedJobsService = async (studentId) => {
+  const student = await User.findById(studentId).lean();
+  console.log(studentId);
+  if (!student) {
+    const error = new Error("Student profile not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const pastApplications = await Application.find({ studentId })
+    .populate("jobId", "category shiftDetails")
+    .lean();
+
+  const appliedJobIds = pastApplications
+    .filter((app) => app.jobId?._id)
+    .map((app) => app.jobId._id);
+
+  const categoryCounts = {};
+  let weekendShiftCount = 0;
+  let totalValidShifts = 0;
+
+  pastApplications.forEach((app) => {
+    if (app.jobId?.category) {
+      const cat = app.jobId.category;
+      categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+    }
+    if (app.jobId?.shiftDetails) {
+      totalValidShifts++;
+      if (/weekend/i.test(app.jobId.shiftDetails)) {
+        weekendShiftCount++;
+      }
+    }
+  });
+
+  const preferredCategories = Object.keys(categoryCounts).sort(
+    (a, b) => categoryCounts[b] - categoryCounts[a],
+  );
+
+  const prefersWeekend =
+    totalValidShifts > 0 && weekendShiftCount / totalValidShifts >= 0.5;
+
+  const studentLocation = (student.location || "").trim();
+
+  const pipeline = [
+    {
+      $match: {
+        _id: { $nin: appliedJobIds },
+        vacancy: { $gt: 0 },
+      },
+    },
+
+    // B. Scoring System (+40 Location, +30 Category, +30 Shift)
+    {
+      $addFields: {
+        score: {
+          $add: [
+            // 1. Location Match (+40)
+            studentLocation
+              ? {
+                  $cond: [
+                    {
+                      $regexMatch: {
+                        input: "$location",
+                        regex: studentLocation,
+                        options: "i",
+                      },
+                    },
+                    40,
+                    0,
+                  ],
+                }
+              : 0,
+
+            // 2. Category History Match (+30)
+            preferredCategories.length > 0
+              ? {
+                  $cond: [{ $in: ["$category", preferredCategories] }, 30, 0],
+                }
+              : 0,
+
+            // 3. Shift Pattern Match (+30)
+            prefersWeekend
+              ? {
+                  $cond: [
+                    {
+                      $regexMatch: {
+                        input: "$shiftDetails",
+                        regex: "weekend",
+                        options: "i",
+                      },
+                    },
+                    30,
+                    0,
+                  ],
+                }
+              : 0,
+          ],
+        },
+      },
+    },
+
+    {
+      $sort: {
+        score: -1,
+        createdAt: -1,
+      },
+    },
+
+    {
+      $limit: 6,
+    },
+
+    {
+      $lookup: {
+        from: "users",
+        localField: "postedBy",
+        foreignField: "_id",
+        as: "postedBy",
+      },
+    },
+    {
+      $unwind: {
+        path: "$postedBy",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $project: {
+        "postedBy.password": 0,
+        "postedBy.__v": 0,
+        score: 0,
+      },
+    },
+  ];
+
+  const recommendedJobs = await Job.aggregate(pipeline);
+  return recommendedJobs;
 };
