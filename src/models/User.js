@@ -53,10 +53,7 @@ const userSchema = new mongoose.Schema(
     course: {
       type: String,
       default: "",
-
-      required: function () {
-        return this.role === "student";
-      },
+      trim: true,
     },
     skills: {
       type: [String],

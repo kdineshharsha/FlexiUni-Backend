@@ -113,7 +113,7 @@ export const getEmployerJobs = async (req, res, next) => {
 
 export const getRecommendedJobs = async (req, res, next) => {
   try {
-    const studentId = req.user._id || req.user.id;
+    const studentId = req.user?._id || req.user?.id || null;
     const jobs = await getRecommendedJobsService(studentId);
 
     return res.status(200).json({

@@ -16,7 +16,7 @@ const jobRouter = express.Router();
 
 jobRouter.get("/", getJobsByFilter);
 jobRouter.get("/all", getAllJobs);
-jobRouter.get("/recommended", verifyJWT, getRecommendedJobs);
+jobRouter.get("/recommended", getRecommendedJobs);
 jobRouter.get("/:jobId", getJobById);
 jobRouter.post("/create", verifyJWT, createJob);
 jobRouter.get("/employer/jobs", verifyJWT, getEmployerJobs);

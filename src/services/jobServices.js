@@ -122,9 +122,14 @@ export const getRecommendedJobsService = async (studentId) => {
   const student = await User.findById(studentId).lean();
   console.log(studentId);
   if (!student) {
-    const error = new Error("Student profile not found");
-    error.statusCode = 404;
-    throw error;
+    const latestJobs = await Job.find({ vacancy: { $gt: 0 } })
+
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .populate("postedBy", "fullName email")
+      .lean();
+
+    return latestJobs;
   }
 
   const pastApplications = await Application.find({ studentId })
