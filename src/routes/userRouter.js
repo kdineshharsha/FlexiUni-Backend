@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getStudentProfile,
   loginUser,
   registerUser,
   updateProfile,
@@ -11,5 +12,6 @@ const userRouter = express.Router();
 userRouter.post("/register", registerUser);
 userRouter.post("/login", loginUser);
 userRouter.put("/update-profile", verifyJWT, updateProfile);
+userRouter.get("/student/:studentId", verifyJWT, getStudentProfile);
 
 export default userRouter;

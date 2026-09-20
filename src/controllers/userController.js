@@ -1,4 +1,5 @@
 import {
+  getStudentProfileService,
   loginUserService,
   registerUserService,
   updateUserProfileService,
@@ -39,6 +40,20 @@ export const updateProfile = async (req, res, next) => {
       status: "success",
       message: "Profile updated successfully",
       user: updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getStudentProfile = async (req, res, next) => {
+  try {
+    const studentId = req.params.studentId;
+    const studentData = await getStudentProfileService(studentId);
+
+    res.status(200).json({
+      status: "success",
+      data: studentData,
     });
   } catch (error) {
     next(error);
